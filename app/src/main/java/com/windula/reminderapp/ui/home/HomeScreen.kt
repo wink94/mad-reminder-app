@@ -1,0 +1,242 @@
+package com.windula.reminderapp.ui.home
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.navigation.NavController
+import com.windula.reminderapp.dto.ReminderCardData
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.windula.reminderapp.dto.BottomNavItem
+
+//@Preview
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun HomeScreen(navController: NavController) {
+
+
+    val list = listOf(
+        ReminderCardData(
+            header = "test",
+            "test",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Green,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test2",
+            "test2",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Red,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+        ReminderCardData(
+            "test3",
+            "test3",
+            Color.Blue,
+            "2022",
+            backgroundColor = Color.Cyan,
+            Color.Yellow
+        ),
+    )
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /* ... */ }) {
+                /* FAB content */
+                Text("+")
+            }
+        },
+        // Defaults to false
+        isFloatingActionButtonDocked = true,
+        bottomBar = {
+            BottomAppBar { BottomBar() }
+        }
+    ) {
+        ReminderList(dataList = list)
+    }
+
+
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ReminderList(dataList: List<ReminderCardData>) {
+
+
+    LazyColumn() {
+        stickyHeader {
+            TopBar()
+        }
+        items(dataList) { item ->
+            ReminderCard(
+                header = item.header,
+                description = item.description,
+                color = item.color,
+                date = item.date,
+                backgroundColor = item.backgroundColor,
+                circleColor = item.circleColor
+            )
+        }
+    }
+}
+
+@Composable
+fun TopBar() {
+    Column {
+        TopAppBar(
+            elevation = 4.dp,
+            title = {
+                Text(
+                    "Reminders",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            },
+            backgroundColor = MaterialTheme.colors.primarySurface,
+            actions = {
+
+                IconButton(onClick = {/* Do Something*/ }) {
+                    Icon(Icons.Filled.Face, null)
+                }
+            })
+
+
+    }
+}
+
+@Composable
+fun BottomBar(navController: NavController) {
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val bottomNavItems = listOf(
+        BottomNavItem(
+            name = "Home",
+            route = "home",
+            icon = Icons.Rounded.Home,
+        ),
+        BottomNavItem(
+            name = "Create Reminder",
+            route = "add",
+            icon = Icons.Rounded.AddCircle,
+        ),
+        BottomNavItem(
+            name = "Settings",
+            route = "settings",
+            icon = Icons.Rounded.Settings,
+        ),
+    )
+
+    androidx.compose.material3.NavigationBar(
+        containerColor = MaterialTheme.colors.primary,
+    ) {
+        bottomNavItems.forEach { item ->
+            val selected = item.route == backStackEntry.value?.destination?.route
+
+            NavigationBarItem(
+                selected = selected,
+                onClick = { navController.navigate(item.route) },
+                label = {
+                    Text(
+                        text = item.name,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = "${item.name} Icon",
+                    )
+                }
+            )
+        }
+    }
+
+}
