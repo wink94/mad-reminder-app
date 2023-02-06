@@ -12,7 +12,7 @@ import com.windula.reminderapp.ui.register.RegisterScreen
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screens.Register.route
+        startDestination = Screens.Login.route
     )
     {
         composable(route = Screens.Login.route) {

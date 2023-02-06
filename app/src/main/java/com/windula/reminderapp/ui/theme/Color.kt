@@ -13,7 +13,7 @@ val PrimaryColor = Color(0xFF83DDFF)
 val BackgroundColor = Color(0xFFFFE8F0)
 val LightTextColor = Color(0xFF758684)
 val SecondaryColor = Color(0xFF593153)
-val PlaceholderColor = Color(0xFFE5E5E5)
+val PlaceholderColor = Color(0xFFC5C5C5)
 val LightPrimaryColor = Color(0xFFFFF6EE)
 
 val blue_100 = Color(0xFF407BFF)

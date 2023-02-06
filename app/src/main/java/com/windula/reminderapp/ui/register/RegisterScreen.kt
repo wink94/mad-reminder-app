@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.windula.reminderapp.R
+import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.theme.*
 
 @Composable
@@ -59,8 +60,8 @@ fun RegisterScreen(navController: NavController) {
                 textColor = PrimaryColor,
                 backgroundColor = Color.White,
                 cursorColor = PrimaryColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = PrimaryColor,
+                unfocusedIndicatorColor = Color.Gray
             ),
             shape = InputBoxShape.medium,
             singleLine = true,
@@ -106,8 +107,8 @@ fun RegisterScreen(navController: NavController) {
                 textColor = PrimaryColor,
                 backgroundColor = Color.White,
                 cursorColor = PrimaryColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = PrimaryColor,
+                unfocusedIndicatorColor = Color.Gray
             ),
             shape = InputBoxShape.medium,
             singleLine = true,
@@ -154,8 +155,8 @@ fun RegisterScreen(navController: NavController) {
                 textColor = PrimaryColor,
                 backgroundColor = Color.White,
                 cursorColor = PrimaryColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = PrimaryColor,
+                unfocusedIndicatorColor = Color.Gray
             ),
             shape = InputBoxShape.medium,
             singleLine = true,
@@ -216,33 +217,9 @@ fun RegisterScreen(navController: NavController) {
             )
         }
 
-        Row(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .padding(horizontal = 40.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checkBoxTwo, onCheckedChange = { checkBoxTwo = it },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = PrimaryColor,
-                    uncheckedColor = SecondaryColor,
-                    checkmarkColor = SecondaryColor
-                ),
-                modifier = Modifier.clip(shape = Shapes.medium)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = "Email me about special pricing",
-                fontFamily = Poppins,
-                color = SecondaryColor,
-                fontSize = 12.sp
-            )
-        }
 
         Button(
-            onClick = {},
+            onClick = {navController.navigate(Screens.Home.route)},
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = PrimaryColor
             ),
@@ -268,7 +245,7 @@ fun RegisterScreen(navController: NavController) {
 
         SocialMediaSignInButtons()
 
-        TextButton(onClick = { /*TODO*/ },
+        TextButton(onClick = { navController.navigate(Screens.Login.route) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp)

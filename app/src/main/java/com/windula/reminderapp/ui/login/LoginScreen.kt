@@ -189,7 +189,7 @@ fun LoginArea(navController: NavController) {
                             }
                         }
                     )
-
+                    Spacer(modifier = Modifier.width(6.dp))
                     Button(
                         onClick = {
                             if (sharedPref.validateLoginData(email,password)){
@@ -231,7 +231,9 @@ fun LoginArea(navController: NavController) {
                         )
                     }
                     TextButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(Screens.Register.route)
+                        },
                         contentPadding = PaddingValues(vertical = 0.dp)
                     ) {
                         Text(
@@ -241,7 +243,7 @@ fun LoginArea(navController: NavController) {
                             fontSize = 12.sp,
                         )
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
 
                 }

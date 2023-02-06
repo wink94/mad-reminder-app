@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Home
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.windula.reminderapp.dto.BottomNavItem
+import com.windula.reminderapp.ui.Screens
 
 //@Preview
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -104,7 +106,7 @@ fun HomeScreen(navController: NavController) {
             BottomAppBar { BottomBar(navController) }
         }
     ) {
-        ReminderList(dataList = list)
+        ReminderList(dataList = list,navController)
     }
 
 
@@ -112,12 +114,12 @@ fun HomeScreen(navController: NavController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ReminderList(dataList: List<ReminderCardData>) {
+fun ReminderList(dataList: List<ReminderCardData>,navController:NavController) {
 
 
     LazyColumn() {
         stickyHeader {
-            TopBar()
+            TopBar(navController)
         }
         items(dataList) { item ->
             ReminderCard(
@@ -130,7 +132,7 @@ fun ReminderList(dataList: List<ReminderCardData>) {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(navController:NavController) {
     Column {
         TopAppBar(
             elevation = 4.dp,
@@ -148,6 +150,11 @@ fun TopBar() {
 
                 IconButton(onClick = {/* Do Something*/ }) {
                     Icon(Icons.Filled.Face, null)
+                }
+                IconButton(onClick = {
+                    navController.navigate(Screens.Login.route)
+                }) {
+                    Icon(Icons.Filled.ExitToApp, null)
                 }
             })
 
