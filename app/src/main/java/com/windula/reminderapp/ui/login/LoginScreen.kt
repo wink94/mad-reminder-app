@@ -1,11 +1,14 @@
 package com.windula.reminderapp.ui.login
 
-import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +28,7 @@ import com.windula.reminderapp.R
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.theme.*
 import com.windula.reminderapp.util.SharedPref
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -45,14 +49,17 @@ fun LoginArea(navController: NavController) {
 
     val context = LocalContext.current
 
+    val sharedPref = SharedPref(context)
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordOpen by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    val sharedPref = SharedPref(context)
 
     Box(contentAlignment = Alignment.BottomCenter) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
 
 //            App title
             Text(
@@ -196,11 +203,9 @@ fun LoginArea(navController: NavController) {
                                 navController.navigate(Screens.Home.route)
                             }
                             else {
-                                Toast.makeText(
-                                    context,
-                                    "Any of Login credentials are invalid!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Invalid login credentials")
+                                }
                             }
                         },
                         modifier = Modifier
@@ -252,6 +257,30 @@ fun LoginArea(navController: NavController) {
 
 
         }
+        SnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hostState = snackbarHostState,
+            snackbar = { snackbarData: SnackbarData ->
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(2.dp, Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    backgroundColor = Color.Red
+                ) {
+                    Row(
+                        modifier = Modifier.padding(4.dp),
+//                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.Center
+
+
+                    ) {
+                        Icon(imageVector = Icons.Default.Warning, contentDescription = "")
+                        Text(text = snackbarData.message,modifier = Modifier.padding(start = 4.dp ), color = Color.White)
+                    }
+                }
+            }
+        )
     }
 }
 
