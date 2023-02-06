@@ -20,12 +20,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.windula.reminderapp.dto.BottomNavItem
 
 //@Preview
@@ -35,93 +39,51 @@ fun HomeScreen(navController: NavController) {
 
 
     val list = listOf(
+
         ReminderCardData(
             header = "test",
             "test",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Green,
-            Color.Yellow
+            "2023-03-06",
         ),
         ReminderCardData(
-            "test2",
-            "test2",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Red,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-05",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-06",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-05",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-01",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-01",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-01",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-01",
         ),
         ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
-        ),
-        ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
-        ),
-        ReminderCardData(
-            "test3",
-            "test3",
-            Color.Blue,
-            "2022",
-            backgroundColor = Color.Cyan,
-            Color.Yellow
+            header = "test",
+            "test",
+            "2023-03-01",
         ),
     )
 
@@ -129,18 +91,21 @@ fun HomeScreen(navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(onClick = { /* ... */ }) {
                 /* FAB content */
-                Text("+")
+                Text(
+                    "+",
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Normal,
+                )
             }
         },
-        // Defaults to false
-        isFloatingActionButtonDocked = true,
+
         bottomBar = {
-            BottomAppBar { BottomBar() }
+            BottomAppBar { BottomBar(navController) }
         }
     ) {
         ReminderList(dataList = list)
     }
-
 
 
 }
@@ -158,10 +123,7 @@ fun ReminderList(dataList: List<ReminderCardData>) {
             ReminderCard(
                 header = item.header,
                 description = item.description,
-                color = item.color,
-                date = item.date,
-                backgroundColor = item.backgroundColor,
-                circleColor = item.circleColor
+                date = item.date
             )
         }
     }
@@ -203,9 +165,9 @@ fun BottomBar(navController: NavController) {
             icon = Icons.Rounded.Home,
         ),
         BottomNavItem(
-            name = "Create Reminder",
-            route = "add",
-            icon = Icons.Rounded.AddCircle,
+            name = "Search",
+            route = "search",
+            icon = Icons.Rounded.Search,
         ),
         BottomNavItem(
             name = "Settings",
@@ -214,7 +176,7 @@ fun BottomBar(navController: NavController) {
         ),
     )
 
-    androidx.compose.material3.NavigationBar(
+    NavigationBar(
         containerColor = MaterialTheme.colors.primary,
     ) {
         bottomNavItems.forEach { item ->
@@ -223,12 +185,7 @@ fun BottomBar(navController: NavController) {
             NavigationBarItem(
                 selected = selected,
                 onClick = { navController.navigate(item.route) },
-                label = {
-                    Text(
-                        text = item.name,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
+
                 icon = {
                     Icon(
                         imageVector = item.icon,

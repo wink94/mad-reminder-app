@@ -56,7 +56,7 @@ fun LoginArea(navController: NavController) {
 
 //            App title
             Text(
-                text = "WELCOME TO REMINDER HABITS",
+                text = "REMINDER APP",
                 fontSize = 28.sp,
                 color = Color.Black,
                 modifier = Modifier

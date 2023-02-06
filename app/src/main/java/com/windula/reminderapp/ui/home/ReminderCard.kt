@@ -5,9 +5,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,15 +13,16 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.windula.reminderapp.R
+import com.windula.reminderapp.util.Constants.ReminderColorConstants
+import java.time.LocalDate
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -31,15 +30,15 @@ import androidx.compose.ui.unit.sp
 fun ReminderCard(
     header: String, // Header
     description: String, // Description
-    color: Color, // Color
     date: String,
-    backgroundColor: Color,
-    circleColor: Color
-) {
 
+) {
     var expand by remember { mutableStateOf(false) } // Expand State
     val rotationState by animateFloatAsState(if (expand) 180f else 0f) // Rotation State
     var stroke by remember { mutableStateOf(1) } // Stroke State
+
+    val getColorMap = getCardColorSchemeByDate(date)
+
     Card(
         modifier = Modifier
             .animateContentSize( // Animation
@@ -49,9 +48,9 @@ fun ReminderCard(
                 )
             )
             .padding(8.dp),
-        backgroundColor = backgroundColor,
+        backgroundColor = getColorMap?.get("backGround")!!,
         shape = RoundedCornerShape(8.dp), // Shape
-        border = BorderStroke(stroke.dp, color), // Stroke Width and Color
+        border = BorderStroke(stroke.dp, getColorMap.get("text")!!), // Stroke Width and Color
         onClick = {
             expand = !expand
             stroke = if (expand) 2 else 1
@@ -71,7 +70,7 @@ fun ReminderCard(
                         .padding(15.dp)
                         .drawBehind {
                             drawCircle(
-                                color = circleColor,
+                                color = getColorMap.get("dayCircleBackgroundColor")!!,
                                 radius = this.size.maxDimension
                             )
                         },
@@ -84,7 +83,7 @@ fun ReminderCard(
 
                 Text(
                     text = header,
-                    color = color, // Header Color
+                    color = getColorMap.get("text")!!, // Header Color
                     fontSize = 20.sp,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Normal,
@@ -101,15 +100,24 @@ fun ReminderCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
-                        tint = color, // Icon Color
+                        tint = Color.White, // Icon Color
                         contentDescription = "Drop Down Arrow"
                     )
                 }
             }
             if (expand) {
                 Text(
+                    text = date,
+                    color = getColorMap.get("text")!!, // date Color
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                )
+                Text(
                     text = description,
-                    color = color, // Description Color
+                    color = getColorMap.get("text")!!, // Description Color
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Normal,
@@ -119,4 +127,12 @@ fun ReminderCard(
             }
         }
     }
+}
+
+fun getCardColorSchemeByDate(date:String): Map<String, Color>? {
+    val reminderDate = LocalDate.parse(date)
+    println(reminderDate.dayOfWeek.name)
+    println(ReminderColorConstants[reminderDate.dayOfWeek.name])
+    return ReminderColorConstants[reminderDate.dayOfWeek.name]
+
 }
