@@ -11,7 +11,7 @@ class SharedPref(context: Context) {
 
     init {
         with(sharedPrefAuthData.edit()) {
-            putString("username", "admin")
+            putString("username", "admin123@gmail.com")
             putString("password", "admin")
             apply()
         }

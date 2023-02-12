@@ -7,12 +7,13 @@ import androidx.navigation.compose.composable
 import com.windula.reminderapp.ui.home.HomeScreen
 import com.windula.reminderapp.ui.login.LoginScreen
 import com.windula.reminderapp.ui.register.RegisterScreen
+import com.windula.reminderapp.ui.reminder.ModifyReminderScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screens.Login.route
+        startDestination = Screens.ModifyReminder.route
     )
     {
         composable(route = Screens.Login.route) {
@@ -25,6 +26,10 @@ fun NavGraph(navController: NavHostController) {
 
         composable(route = Screens.Register.route) {
             RegisterScreen(navController)
+        }
+
+        composable(route = Screens.ModifyReminder.route) {
+            ModifyReminderScreen(navController)
         }
     }
 }

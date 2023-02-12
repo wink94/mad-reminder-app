@@ -2,29 +2,21 @@ package com.windula.reminderapp.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.windula.reminderapp.dto.BottomNavItem
 import com.windula.reminderapp.dto.ReminderCardData
 import com.windula.reminderapp.ui.Screens
+import com.windula.reminderapp.ui.components.BottomBar
+import com.windula.reminderapp.ui.components.TopBar
 
 //@Preview
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -111,7 +103,7 @@ fun ReminderList(dataList: List<ReminderCardData>,navController:NavController) {
 
     LazyColumn() {
         stickyHeader {
-            TopBar(navController)
+            TopBar(navController,"Reminders"){TopBarAction(navController)}
         }
         items(dataList) { item ->
             ReminderCard(
@@ -122,77 +114,14 @@ fun ReminderList(dataList: List<ReminderCardData>,navController:NavController) {
         }
     }
 }
-
 @Composable
-fun TopBar(navController:NavController) {
-    Column {
-        TopAppBar(
-            elevation = 4.dp,
-            title = {
-                Text(
-                    "Reminders",
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Start,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            },
-            backgroundColor = MaterialTheme.colors.primarySurface,
-            actions = {
-
-                IconButton(onClick = {/* Do Something*/ }) {
-                    Icon(Icons.Filled.Face, null)
-                }
-                IconButton(onClick = {
-                    navController.navigate(Screens.Login.route)
-                }) {
-                    Icon(Icons.Filled.ExitToApp, null)
-                }
-            })
-
-
+fun TopBarAction(navController:NavController) {
+    IconButton(onClick = {/* Do Something*/ }) {
+        Icon(Icons.Filled.Face, null)
     }
-}
-
-@Composable
-fun BottomBar(navController: NavController) {
-    val backStackEntry = navController.currentBackStackEntryAsState()
-    val bottomNavItems = listOf(
-        BottomNavItem(
-            name = "Home",
-            route = "home",
-            icon = Icons.Rounded.Home,
-        ),
-        BottomNavItem(
-            name = "Search",
-            route = "search",
-            icon = Icons.Rounded.Search,
-        ),
-        BottomNavItem(
-            name = "Settings",
-            route = "settings",
-            icon = Icons.Rounded.Settings,
-        ),
-    )
-
-    NavigationBar(
-        containerColor = MaterialTheme.colors.primary,
-    ) {
-        bottomNavItems.forEach { item ->
-            val selected = item.route == backStackEntry.value?.destination?.route
-
-            NavigationBarItem(
-                selected = selected,
-                onClick = { navController.navigate(item.route) },
-
-                icon = {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = "${item.name} Icon",
-                    )
-                }
-            )
-        }
+    IconButton(onClick = {
+        navController.navigate(Screens.Login.route)
+    }) {
+        Icon(Icons.Filled.ExitToApp, null)
     }
-
 }
