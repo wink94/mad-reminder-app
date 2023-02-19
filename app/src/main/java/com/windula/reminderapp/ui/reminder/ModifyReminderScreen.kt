@@ -1,37 +1,64 @@
 package com.windula.reminderapp.ui.reminder
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.windula.core_domain.entity.Reminder
+import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.DatePicker
 import com.windula.reminderapp.ui.components.TimePicker
 import com.windula.reminderapp.ui.theme.*
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 
 //@Preview
 @Composable
-fun ModifyReminderScreen (navController: NavController){
+fun ModifyReminderScreen(
+    navController: NavController,
+    viewModel: ReminderViewModel = hiltViewModel()
+) {
     var title by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf(LocalDate.now().toString()) }
+    var time by remember { mutableStateOf("00:00") }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {}
+    )
 
+    val context = LocalContext.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(top = 20.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.padding(top = 10.dp)
     ) {
         Image(
             painter = painterResource(id = com.windula.reminderapp.R.drawable.bell_notific_icon),
@@ -107,40 +134,103 @@ fun ModifyReminderScreen (navController: NavController){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(start = 15.dp, end = 15.dp, top = 10.dp),
             backgroundColor = Color.White,
             elevation = 1.dp,
-            shape = BottomBoxShape.medium
-        ) {
-            Row( horizontalArrangement = Arrangement.Center) {
-                Column (
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(1.dp, PrimaryColor),
+
+            ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(bottom = 25.dp)
+            ) {
+                Text(
+                    text = "Select Date and/or Time",
+                    textAlign = TextAlign.Start,
+                    fontFamily = Poppins,
+                    color = PrimaryColor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 14.dp, start = 5.dp),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(top = 50.dp)
+            ) {
+                Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp)
-                        .fillMaxWidth()
+                        .padding(5.dp)
+
                 ) {
 
-                    DatePicker(label = "Date Picker", value = date , onValueChange = {date=it})
+                    DatePicker(label = "Date Picker", value = date, onValueChange = { date = it })
                     println(date)
                 }
-                Column (
+                Column(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp)
-                        .fillMaxWidth()
+                        .padding(5.dp)
                 ) {
 
-                    TimePicker(label = "Time Picker", value = time , onValueChange = {time=it})
+                    TimePicker(label = "Time Picker", value = time, onValueChange = { time = it })
                     println(time)
                 }
             }
 
         }
 
-
+        Button(
+            onClick = {
+                requestPermission(
+                    context = context,
+                    permission = Manifest.permission.ACCESS_FINE_LOCATION,
+                    requestPermission = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }
+                ).apply {
+                    navController.navigate(Screens.GoogleMapComponent.route)
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = PrimaryColor,
+            ),
+            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
+            modifier = Modifier
+                .clip(shape = Shapes.large)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(top = 20.dp),
+            contentPadding = PaddingValues(horizontal = 26.dp, vertical = 10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.AddLocation, null)
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Select Location ",
+                    fontFamily = Poppins,
+                    color = white
+                )
+            }
+        }
 
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.saveReminder(
+                    Reminder(
+                        title = title,
+                        message = message,
+                        reminderTime = time,
+                        reminderDate = date,
+                        creationTime = LocalDateTime.now(),
+                        creatorId = "admin",
+                    )
+                )
+            },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Purple500
             ),
@@ -165,5 +255,19 @@ fun ModifyReminderScreen (navController: NavController){
         }
 
 
+    }
+}
+
+private fun requestPermission(
+    context: Context,
+    permission: String,
+    requestPermission: () -> Unit
+) {
+    if (ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        requestPermission()
     }
 }

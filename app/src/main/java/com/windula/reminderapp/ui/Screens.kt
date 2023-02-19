@@ -8,4 +8,8 @@ sealed class Screens(val route: String) {
 
     object ModifyReminder: Screens("modify_reminder_screen")
 
+    object GoogleMapComponent: Screens("google_map")
+
+    object AddReminderComponent : Screens("add_reminder")
+
 }

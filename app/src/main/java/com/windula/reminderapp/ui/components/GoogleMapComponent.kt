@@ -1,30 +1,59 @@
 package com.windula.reminderapp.ui.components
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-
-import com.google.android.gms.maps.model.CameraPosition
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.ktx.awaitMap
+import com.windula.reminderapp.util.rememberMapViewWithLifecycle
+import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
-fun GoogleMapComponent() {
-    val singapore = LatLng(1.35, 103.87)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
+fun GoogleMapComponent(navController: NavController) {
+    val mapView: MapView = rememberMapViewWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+
+    AndroidView({mapView}) {
+        coroutineScope.launch {
+            val map = mapView.awaitMap()
+            map.uiSettings.isZoomControlsEnabled = true
+            map.uiSettings.isScrollGesturesEnabled = true
+            val location = LatLng(65.06, 25.47)
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude, location.longitude),
+                    10f
+                )
+            )
+            setMapLongClick(map, navController)
+        }
     }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        Marker(
-            state = MarkerState(position = singapore),
-            title = "Singapore",
-            snippet = "Marker in Singapore"
+}
+
+private fun setMapLongClick(
+    map: GoogleMap,
+    navController: NavController
+) {
+    map.setOnMapLongClickListener { latlng ->
+        val snippet = String.format(
+            Locale.getDefault(),
+            "Lat: %1$.2f, Lng: %2$.2f",
+            latlng.latitude,
+            latlng.longitude
         )
+
+        map.addMarker(
+            MarkerOptions().position(latlng).title("Payment location").snippet(snippet)
+        ).apply {
+            navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("location_data", latlng)
+        }
     }
 }

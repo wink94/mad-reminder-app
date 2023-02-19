@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.windula.core_domain.entity.Reminder
 import com.windula.reminderapp.util.Constants.ReminderColorConstants
 import java.time.LocalDate
 
@@ -27,16 +30,15 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ReminderCard(
-    header: String, // Header
-    description: String, // Description
-    date: String,
+    reminder:Reminder
 
-) {
+    ) {
+    println(reminder)
     var expand by remember { mutableStateOf(false) } // Expand State
     val rotationState by animateFloatAsState(if (expand) 180f else 0f) // Rotation State
     var stroke by remember { mutableStateOf(1) } // Stroke State
 
-    val getColorMap = getCardColorSchemeByDate(date)
+    val getColorMap = getCardColorSchemeByDate(reminder.reminderDate)
 
     Card(
         modifier = Modifier
@@ -59,7 +61,9 @@ fun ReminderCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween // Control the header Alignment over here
 
@@ -81,13 +85,55 @@ fun ReminderCard(
 
 
                 Text(
-                    text = header,
+                    text = reminder.title,
                     color = getColorMap.get("text")!!, // Header Color
                     fontSize = 20.sp,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Normal,
-                    modifier = Modifier.weight(.9f).padding(start = 20.dp)
+                    modifier = Modifier
+                        .weight(.9f)
+                        .padding(start = 20.dp)
                 )
+                IconButton(
+                    modifier = Modifier
+                        .rotate(rotationState)
+                        .weight(.1f),
+                    onClick = {
+//                        expand = !expand
+//                        stroke = if (expand) 2 else 1
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        tint = Color.White,
+                        contentDescription = "Edit reminder"
+                    )
+                }
+                Text(
+                    text = reminder.title,
+                    color = getColorMap.get("text")!!, // Header Color
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier
+                        .weight(.9f)
+                        .padding(start = 20.dp)
+                )
+                IconButton(
+                    modifier = Modifier
+                        .rotate(rotationState)
+                        .weight(.1f),
+                    onClick = {
+//                        expand = !expand
+//                        stroke = if (expand) 2 else 1
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        tint = Color.White,
+                        contentDescription = "Delete reminder"
+                    )
+                }
                 IconButton(
                     modifier = Modifier
                         .rotate(rotationState)
@@ -106,21 +152,23 @@ fun ReminderCard(
             }
             if (expand) {
                 Text(
-                    text = date,
+                    text = reminder.reminderDate,
                     color = getColorMap.get("text")!!, // date Color
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Normal,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 )
                 Text(
-                    text = description,
+                    text = reminder.message,
                     color = getColorMap.get("text")!!, // Description Color
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Normal,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 )
             }
@@ -128,7 +176,7 @@ fun ReminderCard(
     }
 }
 
-fun getCardColorSchemeByDate(date:String): Map<String, Color>? {
+fun getCardColorSchemeByDate(date: String): Map<String, Color>? {
     val reminderDate = LocalDate.parse(date)
     println(reminderDate.dayOfWeek.name)
     println(ReminderColorConstants[reminderDate.dayOfWeek.name])

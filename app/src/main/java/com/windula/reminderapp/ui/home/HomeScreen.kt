@@ -9,19 +9,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.windula.reminderapp.dto.ReminderCardData
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.BottomBar
 import com.windula.reminderapp.ui.components.TopBar
+import com.windula.reminderapp.ui.reminder.ReminderViewModel
+import com.windula.reminderapp.ui.reminder.ReminderViewState
 
 //@Preview
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: ReminderViewModel = hiltViewModel()) {
 
 
     val list = listOf(
@@ -75,7 +80,9 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* ... */ }) {
+            FloatingActionButton(onClick = {
+                navController.navigate(Screens.AddReminderComponent.route)
+            }) {
                 /* FAB content */
                 Text(
                     "+",
@@ -85,37 +92,43 @@ fun HomeScreen(navController: NavController) {
                 )
             }
         },
-
         bottomBar = {
             BottomAppBar { BottomBar(navController) }
-        }
-    ) {
-        ReminderList(dataList = list,navController)
-    }
+        }, content = { ReminderList(navController, viewModel) })
 
 
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ReminderList(dataList: List<ReminderCardData>,navController:NavController) {
+fun ReminderList(navController: NavController, viewModel: ReminderViewModel) {
 
+    viewModel.getAllReminder()
 
-    LazyColumn() {
-        stickyHeader {
-            TopBar(navController,"Reminders"){TopBarAction(navController)}
-        }
-        items(dataList) { item ->
-            ReminderCard(
-                header = item.header,
-                description = item.description,
-                date = item.date
-            )
+    val reminderViewState by viewModel.reminderState.collectAsState()
+
+    when (reminderViewState) {
+        is ReminderViewState.Loading -> {}
+        is ReminderViewState.Success -> {
+            val reminderList = (reminderViewState as ReminderViewState.Success).data
+            LazyColumn() {
+                stickyHeader {
+                    TopBar(navController, "Reminders") { TopBarAction(navController) }
+                }
+                items(reminderList) { item ->
+                    ReminderCard(
+                        item
+                    )
+                }
+            }
         }
     }
+
+
 }
+
 @Composable
-fun TopBarAction(navController:NavController) {
+fun TopBarAction(navController: NavController) {
     IconButton(onClick = {/* Do Something*/ }) {
         Icon(Icons.Filled.Face, null)
     }
