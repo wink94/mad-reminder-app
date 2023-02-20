@@ -10,6 +10,6 @@ sealed class Screens(val route: String) {
 
     object GoogleMapComponent: Screens("google_map")
 
-    object AddReminderComponent : Screens("add_reminder")
+    object AddReminderComponent : Screens("reminder_screen")
 
 }

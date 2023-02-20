@@ -22,7 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.windula.core_domain.entity.Reminder
+import com.windula.reminderapp.ui.Screens
+import com.windula.reminderapp.ui.reminder.ReminderViewModel
 import com.windula.reminderapp.util.Constants.ReminderColorConstants
 import java.time.LocalDate
 
@@ -30,8 +34,9 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ReminderCard(
-    reminder:Reminder
-
+    reminder:Reminder,
+    navController:NavController,
+    viewModel: ReminderViewModel = hiltViewModel()
     ) {
     println(reminder)
     var expand by remember { mutableStateOf(false) } // Expand State
@@ -83,7 +88,6 @@ fun ReminderCard(
                     fontSize = 20.sp,
                 )
 
-
                 Text(
                     text = reminder.title,
                     color = getColorMap.get("text")!!, // Header Color
@@ -92,15 +96,21 @@ fun ReminderCard(
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
                         .weight(.9f)
-                        .padding(start = 20.dp)
+                        .padding(start = 20.dp, end = 20.dp)
                 )
+
                 IconButton(
                     modifier = Modifier
-                        .rotate(rotationState)
-                        .weight(.1f),
+//                        .rotate(rotationState)
+                        .weight(.1f).padding(end = 10.dp),
                     onClick = {
-//                        expand = !expand
-//                        stroke = if (expand) 2 else 1
+                        navController.navigate(
+                            "reminder_screen/modify/{reminderId}"
+                                .replace(
+                                    oldValue = "{reminderId}",
+                                    newValue = "${reminder.reminderId}"
+                                ))
+
                     }
                 ) {
                     Icon(
@@ -109,23 +119,13 @@ fun ReminderCard(
                         contentDescription = "Edit reminder"
                     )
                 }
-                Text(
-                    text = reminder.title,
-                    color = getColorMap.get("text")!!, // Header Color
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Start,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .weight(.9f)
-                        .padding(start = 20.dp)
-                )
                 IconButton(
                     modifier = Modifier
-                        .rotate(rotationState)
-                        .weight(.1f),
+//                        .rotate(rotationState)
+                        .weight(.1f).padding(end = 10.dp),
                     onClick = {
-//                        expand = !expand
-//                        stroke = if (expand) 2 else 1
+                        viewModel.deleteReminder(reminder)
+                        navController.navigate(Screens.Home.route)
                     }
                 ) {
                     Icon(
@@ -137,7 +137,7 @@ fun ReminderCard(
                 IconButton(
                     modifier = Modifier
                         .rotate(rotationState)
-                        .weight(.1f),
+                        .weight(.1f).padding(end = 5.dp),
                     onClick = {
                         expand = !expand
                         stroke = if (expand) 2 else 1

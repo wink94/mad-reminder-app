@@ -3,6 +3,8 @@ package com.windula.core_data.datasource.reminder
 import com.windula.core_database.dao.ReminderDao
 import com.windula.core_database.entity.ReminderEntity
 import com.windula.core_domain.entity.Reminder
+import dagger.hilt.android.R
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ReminderDataSourceImpl @Inject constructor(
@@ -14,6 +16,14 @@ class ReminderDataSourceImpl @Inject constructor(
         reminderDao.insertOrUpdate(reminder.toEntity())
     }
 
+    override suspend fun loadReminderById(reminderId: Int): Flow<ReminderEntity> {
+       return reminderDao.findOne(reminderId.toLong())
+    }
+
+    override suspend fun deleteReminder(reminder: Reminder) {
+        reminderDao.delete(reminder.toEntity())
+    }
+
 //    override suspend fun loadRemindersFor(category: Category): Flow<List<Reminder>> {
 //        return reminderDao.findRemindersByCategory(category.categoryId).map { list ->
 //            list.map {
@@ -21,6 +31,8 @@ class ReminderDataSourceImpl @Inject constructor(
 //            }
 //        }
 //    }
+
+
 
     override suspend fun loadAllReminders(): List<Reminder> {
         return reminderDao.findAll().map {

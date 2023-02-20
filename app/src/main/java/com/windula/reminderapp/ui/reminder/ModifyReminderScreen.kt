@@ -42,16 +42,18 @@ import java.time.LocalDateTime
 @Composable
 fun ModifyReminderScreen(
     navController: NavController,
+    reminder: Reminder?,
     viewModel: ReminderViewModel = hiltViewModel()
 ) {
-    var title by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf(LocalDate.now().toString()) }
-    var time by remember { mutableStateOf("00:00") }
+    var title by remember { mutableStateOf(reminder?.title?:"") }
+    var message by remember { mutableStateOf(reminder?.message?:"") }
+    var date by remember { mutableStateOf(reminder?.reminderDate?:LocalDate.now().toString()) }
+    var time by remember { mutableStateOf(reminder?.reminderTime?:"00:00") }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {}
     )
+
 
     val context = LocalContext.current
 
@@ -204,7 +206,7 @@ fun ModifyReminderScreen(
                 .clip(shape = Shapes.large)
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(top = 20.dp),
+                .padding(top = 5.dp),
             contentPadding = PaddingValues(horizontal = 26.dp, vertical = 10.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -228,8 +230,10 @@ fun ModifyReminderScreen(
                         reminderDate = date,
                         creationTime = LocalDateTime.now(),
                         creatorId = "admin",
+                        reminderId = reminder?.reminderId
                     )
                 )
+                navController.navigate(Screens.Home.route)
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Purple500
@@ -237,8 +241,8 @@ fun ModifyReminderScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(top = 20.dp),
-            contentPadding = PaddingValues(vertical = 14.dp),
+                .padding(top = 10.dp),
+            contentPadding = PaddingValues(vertical = 5.dp),
             elevation = ButtonDefaults.elevation(
                 defaultElevation = 0.dp,
                 pressedElevation = 2.dp

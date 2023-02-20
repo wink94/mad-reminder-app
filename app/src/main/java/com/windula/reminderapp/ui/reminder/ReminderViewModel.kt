@@ -2,7 +2,6 @@ package com.windula.reminderapp.ui.reminder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.windula.core_data.datasource.reminder.ReminderDataSource
 import com.windula.core_domain.entity.Reminder
 import com.windula.core_domain.repository.ReminderRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,12 +26,43 @@ class ReminderViewModel @Inject constructor(private val reminderRepo: ReminderRe
 
     fun getAllReminder() {
         viewModelScope.launch {
-
             val reminders = reminderRepo.loadAllReminders()
             _reminderViewState.value =
                 ReminderViewState.Success(
                     reminders
                 )
+        }
+    }
+
+    fun getReminderById (reminderId:Int) {
+        viewModelScope.launch {
+            reminderRepo.loadReminderById(reminderId).collect { response ->
+
+                    _reminderViewState.value =
+                        ReminderViewState.SuccessBookById(
+                            Reminder(
+                                reminderId = response.reminderId,
+                                title = response.title,
+                                message = response.message,
+                                locationX = response.locationX,
+                                locationY = response.locationY,
+                                reminderTime = response.reminderTime,
+                                reminderDate = response.reminderDate,
+                                creationTime = response.creationTime,
+                                modifiedTime = response.modifiedTime,
+                                creatorId = response.creatorId,
+                                reminderSeen = response.reminderSeen
+                            )
+                        )
+
+            }
+
+        }
+    }
+
+    fun deleteReminder(reminder:Reminder){
+        viewModelScope.launch {
+            reminderRepo.deleteReminder(reminder)
         }
     }
 }

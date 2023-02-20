@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.windula.reminderapp.dto.ReminderCardData
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.BottomBar
 import com.windula.reminderapp.ui.components.TopBar
@@ -28,60 +27,10 @@ import com.windula.reminderapp.ui.reminder.ReminderViewState
 @Composable
 fun HomeScreen(navController: NavController, viewModel: ReminderViewModel = hiltViewModel()) {
 
-
-    val list = listOf(
-
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-06",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-05",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-06",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-05",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-01",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-01",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-01",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-01",
-        ),
-        ReminderCardData(
-            header = "test",
-            "test",
-            "2023-03-01",
-        ),
-    )
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate(Screens.AddReminderComponent.route)
+                navController.navigate("reminder_screen/add/-1")
             }) {
                 /* FAB content */
                 Text(
@@ -117,7 +66,7 @@ fun ReminderList(navController: NavController, viewModel: ReminderViewModel) {
                 }
                 items(reminderList) { item ->
                     ReminderCard(
-                        item
+                        item,navController
                     )
                 }
             }
