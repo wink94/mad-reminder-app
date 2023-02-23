@@ -20,6 +20,7 @@ data class ReminderEntity(
     @ColumnInfo(name = "message") val message: String,
     @ColumnInfo(name = "location_x") val locationX: Double?,
     @ColumnInfo(name = "location_y") val locationY: Double?,
+    @ColumnInfo(name = "image") val image: String?,
     @ColumnInfo(name = "reminder_time") val reminderTime: String,
     @ColumnInfo(name = "reminder_date") val reminderDate: String,
     @ColumnInfo(name = "creation_time") val creationTime: LocalDateTime,

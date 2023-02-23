@@ -19,7 +19,7 @@ fun BottomBar(navController: NavController) {
     val bottomNavItems = listOf(
         BottomNavItem(
             name = "Home",
-            route = "home",
+            route = "home_screen",
             icon = Icons.Rounded.Home,
         ),
         BottomNavItem(
@@ -41,7 +41,7 @@ fun BottomBar(navController: NavController) {
             val selected = item.route == backStackEntry.value?.destination?.route
 
             NavigationBarItem(
-                selected = selected,
+                selected = false,
                 onClick = { navController.navigate(item.route) },
 
                 icon = {

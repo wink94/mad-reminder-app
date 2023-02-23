@@ -1,5 +1,8 @@
 package com.windula.reminderapp.ui.reminder
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.windula.core_domain.entity.Reminder
@@ -16,6 +19,9 @@ class ReminderViewModel @Inject constructor(private val reminderRepo: ReminderRe
     private val _reminderViewState = MutableStateFlow<ReminderViewState>(ReminderViewState.Loading)
     val reminderState: StateFlow<ReminderViewState> = _reminderViewState
 
+    var textFromSpeech: String? by mutableStateOf(null)
+
+    var imageUri: String? by mutableStateOf(null)
     fun saveReminder(reminder: Reminder) {
         println(reminder.toString())
         viewModelScope.launch {

@@ -8,6 +8,7 @@ data class Reminder(
     val message: String,
     val locationX: Double? = 65.06,
     val locationY: Double? = 25.47,
+    val image: String? = null,
     val reminderTime: String ,
     val reminderDate: String ,
     val creationTime: LocalDateTime = LocalDateTime.now(),

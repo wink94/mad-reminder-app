@@ -78,6 +78,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:18.0.0")
 
+    implementation("com.google.accompanist:accompanist-permissions:0.23.1")
 
     // Hilt for DI
     implementation("com.google.dagger:hilt-android:2.44.2")

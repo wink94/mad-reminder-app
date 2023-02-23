@@ -1,7 +1,6 @@
 package com.windula.reminderapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import com.windula.reminderapp.R
 
 val Purple200 = Color(0xFFBB86FC)
 val Purple500 = Color(0xFF6200EE)
@@ -21,7 +20,7 @@ val purple_100 = Color(0xFF7E41FF)
 val green_100 = Color(0xFF2CC57F)
 val blue_200 = Color(0xFF009FFA)
 val orange_200 = Color(0xFFFCA83D)
-val yellow_200 = Color(0xFFFFF0D7)
+val green_300 = Color(0xFF009688)
 val red_200 = Color(0xFFFF1A1A)
 val white = Color(0xFFFFFFFF)
 

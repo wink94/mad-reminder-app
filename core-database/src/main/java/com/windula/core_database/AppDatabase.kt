@@ -9,7 +9,7 @@ import com.windula.core_database.entity.ReminderEntity
 
 @Database(
     entities = [ReminderEntity::class],
-    version = 1
+    version = 2
 )
 @TypeConverters(LocalDateTimeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
