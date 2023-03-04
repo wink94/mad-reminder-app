@@ -69,6 +69,7 @@ dependencies {
 
     implementation(androidx.navigation.hilt.compose)
 
+    implementation(androidx.workManager.work)
 
     // Maps dependencies
     implementation("com.google.maps.android:maps-ktx:3.3.0")

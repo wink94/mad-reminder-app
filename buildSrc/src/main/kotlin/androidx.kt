@@ -47,4 +47,9 @@ object androidx {
         val runtime = "androidx.room:room-runtime:$version"
         val compiler = "androidx.room:room-compiler:$version"
     }
+
+    object workManager {
+        private val work_version = "2.8.0"
+        val work = "androidx.work:work-runtime-ktx:$work_version"
+    }
 }

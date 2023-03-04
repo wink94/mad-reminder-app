@@ -2,11 +2,9 @@ package com.windula.reminderapp.ui.reminder
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -40,19 +38,23 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionRequired
 import com.google.accompanist.permissions.rememberPermissionState
 import com.windula.core_domain.entity.Reminder
-import com.windula.reminderapp.BuildConfig
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.DatePicker
 import com.windula.reminderapp.ui.components.PickImageFromGallery
 import com.windula.reminderapp.ui.components.TimePicker
 import com.windula.reminderapp.ui.theme.*
 import com.windula.reminderapp.util.APP_TAG
+import com.windula.reminderapp.util.ReminderWorker
+import com.windula.reminderapp.util.getTimeDelay
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 
 //@Preview
@@ -290,8 +292,8 @@ fun ModifyReminderScreen(
             Button(
                 onClick = {
 
-                    viewModel.saveReminder(
-                        Reminder(
+                    saveReminder(
+                        navController, Reminder(
                             title = title,
                             message = message,
                             reminderTime = time,
@@ -300,9 +302,8 @@ fun ModifyReminderScreen(
                             creatorId = "admin",
                             reminderId = reminder?.reminderId,
                             image = viewModel?.imageUri
-                        )
+                        ), viewModel,context
                     )
-                    navController.navigate(Screens.Home.route)
                 },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Purple500
@@ -328,6 +329,46 @@ fun ModifyReminderScreen(
 
         }
     }
+}
+
+private fun saveReminder(
+    navController: NavController,
+    reminder: Reminder,
+    viewModel: ReminderViewModel,
+    context: Context
+) {
+
+    viewModel.saveReminder(
+        reminder
+    )
+
+    if (reminder.reminderDate != null && reminder.reminderTime!=null) {
+        val timeDelay = getTimeDelay(TimeUnit.MINUTES, reminder.reminderDate, reminder.reminderTime)
+
+        if (timeDelay>0) {
+            createWorkRequest(reminder.title, reminder.message, timeDelay, context)
+            Log.i(APP_TAG,"reminder notification created")
+        }
+        else{
+            Log.e(APP_TAG,"reminder notification failed")
+            Toast.makeText(context, "Reminder notification not available for a past date", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    navController.navigate(Screens.Home.route)
+}
+
+private fun createWorkRequest(title:String,message: String,timeDelayInSeconds: Long,context: Context  ) {
+    val myWorkRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+        .setInitialDelay(timeDelayInSeconds, TimeUnit.MINUTES)
+        .setInputData(workDataOf(
+            "title" to title,
+            "message" to message,
+        )
+        )
+        .build()
+
+    WorkManager.getInstance(context).enqueue(myWorkRequest)
 }
 
 private fun requestPermission(

@@ -1,10 +1,14 @@
 package com.windula.reminderapp.util
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.windula.reminderapp.ui.theme.*
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 object Constants {
 
@@ -19,9 +23,24 @@ object Constants {
     )
 }
 val APP_TAG = "ReminderApp"
+
+val CHANNEL_ID = "CHANNEL_ID"
 fun getTimestamp():String{
     return DateTimeFormatter
         .ofPattern("yyyy_MM_dd_HH_mm_ss_SSSSSS")
         .withZone(ZoneOffset.UTC)
         .format(Instant.now())
+}
+
+
+fun getTimeDelay(unit:TimeUnit,date:String,time:String): Long {
+    var diff:Long = 0
+    if (unit == TimeUnit.MINUTES){
+        val date = SimpleDateFormat("yyyy-MM-dd HH:mm").parse("$date $time")
+        diff = (date.time - Date().time)/1000/60
+        Log.i(APP_TAG, "time dealy (min) ${diff.toString()}")
+
+    }
+
+    return diff
 }
