@@ -9,10 +9,11 @@ data class Reminder(
     val locationX: Double? = 65.06,
     val locationY: Double? = 25.47,
     val image: String? = null,
-    val reminderTime: String ,
-    val reminderDate: String ,
+    val reminderTime: String,
+    val reminderDate: String,
     val creationTime: LocalDateTime = LocalDateTime.now(),
     val modifiedTime: LocalDateTime = LocalDateTime.now(),
     val creatorId: String,
     val reminderSeen: Boolean = false,
+    val reminderRepeat: String? = null
 )

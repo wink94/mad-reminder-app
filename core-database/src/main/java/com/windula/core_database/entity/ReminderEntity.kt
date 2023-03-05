@@ -27,4 +27,5 @@ data class ReminderEntity(
     @ColumnInfo(name = "modified_time") val modifiedTime: LocalDateTime,
     @ColumnInfo(name = "creator_id") val creatorId: String,
     @ColumnInfo(name = "reminder_seen") val reminderSeen: Boolean,
+    @ColumnInfo(name = "reminder_repeat") val reminderRepeat: String?,
 )

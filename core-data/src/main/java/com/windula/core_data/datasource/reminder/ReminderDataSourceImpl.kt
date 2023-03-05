@@ -3,7 +3,6 @@ package com.windula.core_data.datasource.reminder
 import com.windula.core_database.dao.ReminderDao
 import com.windula.core_database.entity.ReminderEntity
 import com.windula.core_domain.entity.Reminder
-import dagger.hilt.android.R
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -17,21 +16,12 @@ class ReminderDataSourceImpl @Inject constructor(
     }
 
     override suspend fun loadReminderById(reminderId: Int): Flow<ReminderEntity> {
-       return reminderDao.findOne(reminderId.toLong())
+        return reminderDao.findOne(reminderId.toLong())
     }
 
     override suspend fun deleteReminder(reminder: Reminder) {
         reminderDao.delete(reminder.toEntity())
     }
-
-//    override suspend fun loadRemindersFor(category: Category): Flow<List<Reminder>> {
-//        return reminderDao.findRemindersByCategory(category.categoryId).map { list ->
-//            list.map {
-//                it.fromEntity()
-//            }
-//        }
-//    }
-
 
 
     override suspend fun loadAllReminders(): List<Reminder> {
@@ -41,7 +31,7 @@ class ReminderDataSourceImpl @Inject constructor(
     }
 
     private fun Reminder.toEntity() = ReminderEntity(
-        reminderId = if(this.reminderId != null) this.reminderId else null,
+        reminderId = if (this.reminderId != null) this.reminderId else null,
         title = this.title,
         message = this.message,
         locationX = this.locationX,
@@ -52,7 +42,8 @@ class ReminderDataSourceImpl @Inject constructor(
         modifiedTime = this.modifiedTime,
         creatorId = this.creatorId,
         reminderSeen = this.reminderSeen,
-        image = this.image
+        image = this.image,
+        reminderRepeat = this.reminderRepeat
     )
 
     private fun ReminderEntity.fromEntity() = Reminder(
@@ -67,6 +58,7 @@ class ReminderDataSourceImpl @Inject constructor(
         modifiedTime = this.modifiedTime,
         creatorId = this.creatorId,
         reminderSeen = this.reminderSeen,
-        image = this.image
+        image = this.image,
+        reminderRepeat = this.reminderRepeat
     )
 }

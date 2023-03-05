@@ -44,3 +44,17 @@ fun getTimeDelay(unit:TimeUnit,date:String,time:String): Long {
 
     return diff
 }
+
+
+fun getTimeInterval(period:String,unit:TimeUnit): Long {
+    var time:Long = 0L
+    if (unit == TimeUnit.MINUTES){
+         if (period=="Per 5 Minute"){
+             time = 5L
+         }
+        if (period=="Daily"){
+            time = 24*60
+        }
+    }
+    return time
+}

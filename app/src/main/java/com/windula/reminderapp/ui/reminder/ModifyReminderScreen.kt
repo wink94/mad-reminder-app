@@ -38,20 +38,20 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
+import androidx.work.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.windula.core_domain.entity.Reminder
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.DatePicker
 import com.windula.reminderapp.ui.components.PickImageFromGallery
+import com.windula.reminderapp.ui.components.RepeatReminderDropdown
 import com.windula.reminderapp.ui.components.TimePicker
 import com.windula.reminderapp.ui.theme.*
 import com.windula.reminderapp.util.APP_TAG
 import com.windula.reminderapp.util.ReminderWorker
 import com.windula.reminderapp.util.getTimeDelay
+import com.windula.reminderapp.util.getTimeInterval
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -69,6 +69,7 @@ fun ModifyReminderScreen(
     var message by remember { mutableStateOf(reminder?.message ?: "") }
     var date by remember { mutableStateOf(reminder?.reminderDate ?: LocalDate.now().toString()) }
     var time by remember { mutableStateOf(reminder?.reminderTime ?: "00:00") }
+    var reminderRepeat by remember { mutableStateOf("") }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {}
@@ -254,6 +255,8 @@ fun ModifyReminderScreen(
 
             }
 
+            RepeatReminderDropdown(value = reminderRepeat, onValueChange = { reminderRepeat = it })
+
             Button(
                 onClick = {
                     requestPermission(
@@ -301,8 +304,9 @@ fun ModifyReminderScreen(
                             creationTime = LocalDateTime.now(),
                             creatorId = "admin",
                             reminderId = reminder?.reminderId,
-                            image = viewModel?.imageUri
-                        ), viewModel,context
+                            image = viewModel?.imageUri,
+                            reminderRepeat = reminderRepeat
+                        ), viewModel, context
                     )
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -342,33 +346,77 @@ private fun saveReminder(
         reminder
     )
 
-    if (reminder.reminderDate != null && reminder.reminderTime!=null) {
+    if (reminder.reminderDate != null && reminder.reminderTime != null) {
         val timeDelay = getTimeDelay(TimeUnit.MINUTES, reminder.reminderDate, reminder.reminderTime)
 
-        if (timeDelay>0) {
-            createWorkRequest(reminder.title, reminder.message, timeDelay, context)
-            Log.i(APP_TAG,"reminder notification created")
-        }
-        else{
-            Log.e(APP_TAG,"reminder notification failed")
-            Toast.makeText(context, "Reminder notification not available for a past date", Toast.LENGTH_SHORT).show()
+        if (timeDelay > 0) {
+
+            if (reminder.reminderRepeat != "" && reminder.reminderRepeat != null) {
+                println("reminder repeat " + reminder.reminderRepeat)
+                val timeInterval = getTimeInterval(reminder.reminderRepeat!!, TimeUnit.MINUTES)
+                createWorkRequest(
+                    reminder.title,
+                    reminder.message,
+                    timeDelay,
+                    context,
+                    timeInterval
+                )
+            } else {
+                createWorkRequest(reminder.title, reminder.message, timeDelay, context)
+            }
+
+
+            Log.i(APP_TAG, "reminder notification created")
+        } else {
+            Log.e(APP_TAG, "reminder notification failed")
+            Toast.makeText(
+                context,
+                "Reminder notification not available for a past date",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     navController.navigate(Screens.Home.route)
 }
 
-private fun createWorkRequest(title:String,message: String,timeDelayInSeconds: Long,context: Context  ) {
-    val myWorkRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-        .setInitialDelay(timeDelayInSeconds, TimeUnit.MINUTES)
-        .setInputData(workDataOf(
-            "title" to title,
-            "message" to message,
-        )
-        )
-        .build()
+private fun createWorkRequest(
+    title: String,
+    message: String,
+    timeDelayInSeconds: Long,
+    context: Context,
+    periodicTime: Long = 0
+) {
 
-    WorkManager.getInstance(context).enqueue(myWorkRequest)
+    if (periodicTime > 0) {
+        println("periodicTime $periodicTime")
+        val myWorkRequest = PeriodicWorkRequestBuilder<ReminderWorker>(
+            periodicTime, // repeating interval
+            TimeUnit.MINUTES,
+            timeDelayInSeconds, // flex interval - worker will run somewhen within this period of time, but at the end of repeating interval
+            TimeUnit.MINUTES
+        ).setInputData(
+            workDataOf(
+                "title" to title,
+                "message" to message,
+            )
+        )
+            .build()
+
+        WorkManager.getInstance(context).enqueue(myWorkRequest)
+    } else {
+        val myWorkRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setInitialDelay(timeDelayInSeconds, TimeUnit.MINUTES)
+            .setInputData(
+                workDataOf(
+                    "title" to title,
+                    "message" to message,
+                )
+            )
+            .build()
+
+        WorkManager.getInstance(context).enqueue(myWorkRequest)
+    }
 }
 
 private fun requestPermission(

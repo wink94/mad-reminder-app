@@ -82,7 +82,7 @@ class NotificationHelper(val context: Context ) {
                 // for ActivityCompat#requestPermissions for more details.
                 return
             }
-            notify(1, notification.build())
+            notify((0..1000).random(), notification.build())
 
 
         }
