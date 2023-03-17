@@ -2,9 +2,11 @@ package com.windula.reminderapp.ui.reminder
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.windula.core_domain.entity.Reminder
 import com.windula.core_domain.repository.ReminderRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +22,7 @@ class ReminderViewModel @Inject constructor(private val reminderRepo: ReminderRe
     val reminderState: StateFlow<ReminderViewState> = _reminderViewState
 
     var textFromSpeech: String? by mutableStateOf(null)
+    var location:LatLng? by   mutableStateOf(LatLng(6.816927810850897, 79.86943492064688))
 
     var imageUri: String? by mutableStateOf(null)
     fun saveReminder(reminder: Reminder) {

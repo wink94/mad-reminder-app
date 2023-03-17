@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.work.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.model.LatLng
 import com.windula.core_domain.entity.Reminder
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.DatePicker
@@ -48,10 +52,7 @@ import com.windula.reminderapp.ui.components.PickImageFromGallery
 import com.windula.reminderapp.ui.components.RepeatReminderDropdown
 import com.windula.reminderapp.ui.components.TimePicker
 import com.windula.reminderapp.ui.theme.*
-import com.windula.reminderapp.util.APP_TAG
-import com.windula.reminderapp.util.ReminderWorker
-import com.windula.reminderapp.util.getTimeDelay
-import com.windula.reminderapp.util.getTimeInterval
+import com.windula.reminderapp.util.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -78,6 +79,24 @@ fun ModifyReminderScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scrollState = rememberScrollState()
+
+    var location: LatLng? by remember {
+        mutableStateOf(
+            LatLng(
+                6.816927810850897,
+                79.86943492064688
+            )
+        )
+    }
+
+    var latLng =
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<LatLng>("location_data")
+            ?.observeAsState()
+
+    latLng?.value?.let {
+        location = it
+        print(it)
+    }
 
     val context = LocalContext.current
 
@@ -262,9 +281,20 @@ fun ModifyReminderScreen(
                     requestPermission(
                         context = context,
                         permission = Manifest.permission.ACCESS_FINE_LOCATION,
-                        requestPermission = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }
+                        requestPermission = {
+                            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        }
                     ).apply {
-                        navController.navigate(Screens.GoogleMapComponent.route)
+                        requestPermission(
+                            context = context,
+                            permission = Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                            requestPermission = {
+                                launcher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                            }
+                        ).apply {
+                            navController.navigate(Screens.GoogleMapComponent.route)
+                        }
+
                     }
                     println(viewModel.imageUri)
                 },
@@ -305,7 +335,9 @@ fun ModifyReminderScreen(
                             creatorId = "admin",
                             reminderId = reminder?.reminderId,
                             image = viewModel?.imageUri,
-                            reminderRepeat = reminderRepeat
+                            reminderRepeat = reminderRepeat,
+                            locationX = location!!?.latitude,
+                            locationY = location!!?.longitude
                         ), viewModel, context
                     )
                 },
@@ -345,6 +377,8 @@ private fun saveReminder(
     viewModel.saveReminder(
         reminder
     )
+
+    GeofencingService(context).checkLocationSettingsAndStartGeofence(reminder)
 
     if (reminder.reminderDate != null && reminder.reminderTime != null) {
         val timeDelay = getTimeDelay(TimeUnit.MINUTES, reminder.reminderDate, reminder.reminderTime)
