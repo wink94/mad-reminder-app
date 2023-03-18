@@ -1,7 +1,5 @@
 package com.windula.reminderapp
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.windula.reminderapp.ui.NavGraph
 import com.windula.reminderapp.ui.theme.ReminderAppTheme
-import com.windula.reminderapp.util.GeofenceBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

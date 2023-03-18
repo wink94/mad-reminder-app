@@ -1,32 +1,33 @@
-package com.windula.reminderapp.util
+package com.windula.reminderapp.util.geofence2
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.google.android.gms.location.*
 import com.windula.core_domain.entity.Reminder
+import com.windula.reminderapp.util.APP_TAG
+import com.windula.reminderapp.util.geofence.GeofenceBroadcastReceiver
 
 
+@SuppressLint("UnspecifiedImmutableFlag")
 class GeofencingService(val context: Context){
 
     private var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
 
-
-//    fun getGeofencingRequest(): GeofencingRequest {
-//        return GeofencingRequest.Builder().apply {
-//            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-//            addGeofences(geofenceList)
-//        }.build()
-//    }
+    private var geofenceList = listOf<Geofence>()
+    fun getGeofencingRequest(): GeofencingRequest {
+        return GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofences(geofenceList)
+        }.build()
+    }
 
     private val geofenceIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
@@ -54,18 +55,18 @@ class GeofencingService(val context: Context){
             .setCircularRegion(
                 dataItem.locationX!!,
                 dataItem.locationY!!,
-                150f
+                1500f
             )
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
             .build()
 
         val geofenceRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(Geofence.GEOFENCE_TRANSITION_ENTER)
+            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
             .addGeofence(geoFence)
             .build()
 
-        geofenceRequest.geofences
+        println(geofenceRequest.geofences)
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -83,9 +84,9 @@ class GeofencingService(val context: Context){
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        geofencingClient.addGeofences(geofenceRequest, geofenceIntent)?.run {
+        geofencingClient.addGeofences(geofenceRequest, geofenceIntent).run {
             addOnSuccessListener {
-
+                Log.i(APP_TAG,"Geofence Added")
                 Toast.makeText(
                     context,
                     "Geofence Added",
@@ -94,6 +95,7 @@ class GeofencingService(val context: Context){
             }
             addOnFailureListener {
                 print(it)
+                Log.e(APP_TAG,"Geofence failed to add")
                 Log.e(APP_TAG,it.toString())
                 Toast.makeText(
                     context,
@@ -108,7 +110,7 @@ class GeofencingService(val context: Context){
 
     fun checkLocationSettingsAndStartGeofence(dataItem: Reminder) {
         val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
@@ -118,6 +120,7 @@ class GeofencingService(val context: Context){
             if (task.isSuccessful) {
                 startGeoFence(dataItem)
             } else {
+                print("errror")
 //                Snackbar.make(
 //                    requireView(),
 //                    "Location is not enabled on the device",

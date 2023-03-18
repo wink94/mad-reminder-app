@@ -1,6 +1,8 @@
 package com.windula.reminderapp.ui.reminder
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -38,13 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.work.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.windula.core_domain.entity.Reminder
 import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.DatePicker
@@ -53,8 +58,11 @@ import com.windula.reminderapp.ui.components.RepeatReminderDropdown
 import com.windula.reminderapp.ui.components.TimePicker
 import com.windula.reminderapp.ui.theme.*
 import com.windula.reminderapp.util.*
+import com.windula.reminderapp.util.geofence.GeofenceHelper
+import com.windula.reminderapp.util.geofence2.GeofencingService
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -379,7 +387,7 @@ private fun saveReminder(
     )
 
     GeofencingService(context).checkLocationSettingsAndStartGeofence(reminder)
-
+//    addGeofence(context,reminder)
     if (reminder.reminderDate != null && reminder.reminderTime != null) {
         val timeDelay = getTimeDelay(TimeUnit.MINUTES, reminder.reminderDate, reminder.reminderTime)
 
@@ -411,7 +419,32 @@ private fun saveReminder(
         }
     }
 
-    navController.navigate(Screens.Home.route)
+//    navController.navigate(Screens.Home.route)
+}
+
+@SuppressLint("MissingPermission")
+private fun addGeofence(
+context: Context,reminder: Reminder) {
+    val geofencingClient = LocationServices.getGeofencingClient(context!!)
+    val geofenceHelper = GeofenceHelper(context)
+    val geofence: Geofence = geofenceHelper.getGeofence(
+        UUID.randomUUID().toString(),
+        LatLng(reminder.locationX!!,reminder.locationY!!),
+        1500f,
+        Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+    )
+    val geofencingRequest: GeofencingRequest = geofenceHelper.getGeofencingRequest(geofence)
+    val pendingIntent: PendingIntent? = geofenceHelper.getGeofencePendingIntent()
+    geofencingClient.addGeofences(geofencingRequest, pendingIntent)
+        .addOnSuccessListener(OnSuccessListener<Void?> {
+            // Toast.makeText(context,"geofence added",Toast.LENGTH_LONG).show()
+            Log.d(APP_TAG, "Geofence Added")
+        })
+        .addOnFailureListener(OnFailureListener { e ->
+            val errorMessage: String = geofenceHelper.getErrorString(e)
+            Toast.makeText(context, "Please give background location permission", Toast.LENGTH_LONG).show()
+            Log.d(APP_TAG, "fail in creating geofence: $errorMessage")
+        })
 }
 
 private fun createWorkRequest(

@@ -1,14 +1,13 @@
-package com.windula.reminderapp.util
+package com.windula.reminderapp.util.geofence2
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.provider.Settings.Global.getString
 import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
-import com.windula.reminderapp.R
+import com.windula.reminderapp.util.APP_TAG
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     // ...
