@@ -1,10 +1,12 @@
 package com.windula.reminderapp.ui.home
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.speech.tts.TextToSpeech
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +43,9 @@ import com.windula.reminderapp.ui.Screens
 import com.windula.reminderapp.ui.components.getPhotoFileUri
 import com.windula.reminderapp.ui.reminder.ReminderViewModel
 import com.windula.reminderapp.util.Constants.ReminderColorConstants
+import com.windula.reminderapp.util.TexttoSpeech
 import java.time.LocalDate
+import java.util.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -50,13 +55,16 @@ fun ReminderCard(
     navController: NavController,
     viewModel: ReminderViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     println(reminder)
     var expand by remember { mutableStateOf(false) } // Expand State
     val rotationState by animateFloatAsState(if (expand) 180f else 0f) // Rotation State
     var stroke by remember { mutableStateOf(1) } // Stroke State
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
     val getColorMap = getCardColorSchemeByDate(reminder.reminderDate)
-    val context = LocalContext.current
+    var textToSpeech: TextToSpeech? = null
+    var textToSpeechEnable by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .animateContentSize( // Animation
@@ -110,6 +118,22 @@ fun ReminderCard(
                         .weight(.9f)
                         .padding(start = 20.dp, end = 20.dp)
                 )
+
+                IconButton(
+                    modifier = Modifier
+//                        .rotate(rotationState)
+                        .weight(.1f)
+                        .padding(end = 10.dp),
+                    onClick = {
+                        TexttoSpeech(reminder,context)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Speaker,
+                        tint = Color.White,
+                        contentDescription = "Listen to reminder"
+                    )
+                }
 
                 IconButton(
                     modifier = Modifier
@@ -306,6 +330,16 @@ fun ReminderCard(
             }
         }
     }
+
+
+
+    if (textToSpeechEnable){
+
+    }
+
+
+
+
 }
 
 fun getCardColorSchemeByDate(date: String): Map<String, Color>? {
@@ -320,5 +354,11 @@ fun getDateIcon(date: String): String {
     val reminderDate = LocalDate.parse(date)
     println(reminderDate.dayOfWeek.name)
     return reminderDate.dayOfWeek.name.substring(0, 3)
+
+}
+
+fun textsToSpeech(textToSpeech: TextToSpeech,context:Context){
+
+
 
 }
