@@ -41,13 +41,21 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="" />
-        <receiver android:name=".util.geofence2.GeofenceBroadcastReceiver"
+
+        <receiver android:name=".util.geofence.GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true"/>
-<!--        <service-->
-<!--            android:name=".util.geofence.GeofenceTransitionsJobIntentService"-->
-<!--            android:exported="true"-->
-<!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
+
+<!--        <receiver-->
+<!--            android:name=".util.geofence.GeofenceBroadcastReceiver"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true" />-->
+        <service
+            android:name=".util.geofence.GeofenceJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
