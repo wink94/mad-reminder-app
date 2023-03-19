@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.dagger.hilt.android")
+    id ("com.google.gms.google-services")
     kotlin("android")
     kotlin("kapt")
 //    id ("com.google.devtools.ksp" version "1.7.0-1.0.6")
@@ -70,6 +71,11 @@ dependencies {
     implementation(androidx.navigation.hilt.compose)
 
     implementation(androidx.workManager.work)
+
+    //firebase
+    implementation(platform(androidx.firebase.fireb_bom))
+    implementation(androidx.firebase.firb_anal)
+    implementation("com.google.firebase:firebase-database-ktx")
 
     // Maps dependencies
     implementation("com.google.maps.android:maps-ktx:3.3.0")

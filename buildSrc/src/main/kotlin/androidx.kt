@@ -52,4 +52,13 @@ object androidx {
         private val work_version = "2.8.0"
         val work = "androidx.work:work-runtime-ktx:$work_version"
     }
+
+    object firebase {
+        private val version = "31.2.3"
+        val fireb_bom = "com.google.firebase:firebase-bom:${firebase.version}"
+
+        val firb_realtime = "com.google.firebase:firebase-database-ktx"
+
+        val firb_anal =  "com.google.firebase:firebase-analytics-ktx"
+    }
 }

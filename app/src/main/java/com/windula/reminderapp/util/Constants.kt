@@ -24,7 +24,16 @@ object Constants {
 }
 val APP_TAG = "ReminderApp"
 
-val CHANNEL_ID = "CHANNEL_ID"
+const val CHANNEL_ID = "REMINDER_NOTIFICATION_CHANNEL"
+
+const val GEO_FENCE_CHANNEL_ID = "REMINDER__GEO_FENCE_NOTIFICATION_CHANNEL"
+
+const val GEOFENCE_RADIUS = 200
+const val GEOFENCE_ID = "REMINDER_GEOFENCE_ID"
+const val GEOFENCE_EXPIRATION = 10 * 24 * 60 * 60 * 1000 // 10 days
+const val GEOFENCE_DWELL_DELAY =  10 * 1000 // 10 secs // 2 minutes
+const val GEOFENCE_LOCATION_REQUEST_CODE = 12345
+
 fun getTimestamp():String{
     return DateTimeFormatter
         .ofPattern("yyyy_MM_dd_HH_mm_ss_SSSSSS")
